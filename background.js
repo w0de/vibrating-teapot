@@ -1,5 +1,5 @@
 // Teapot — one click: find the newest archive.today snapshot of the current
-// page and open it in reader mode. No snapshot? Pour a 412.
+// page and open it in reader mode. No snapshot? Pour a 418.
 //
 // Mirrors are tried in order; the first one that *answers* wins, even if its
 // answer is "nothing archived" — that still counts as the archive working.

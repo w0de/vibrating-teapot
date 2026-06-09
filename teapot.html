@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>412 I'm a teapot</title>
+  <title>418 I'm a teapot</title>
   <style>
     :root {
       --bg: #f4f4f5; --fg: #1c1c1e; --muted: #8a8a8e; --accent: #0a84ff;
@@ -17,38 +17,26 @@
     body {
       margin: 0; min-height: 100vh;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 4px;
+      align-items: center; justify-content: center; gap: 18px;
       background: var(--bg); color: var(--fg);
       font: 14px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased; text-align: center; padding: 24px;
+      -webkit-font-smoothing: antialiased; text-align: center; padding: 32px;
     }
-    pre {
-      font-family: ui-monospace, "SF Mono", Menlo, monospace;
-      color: var(--muted); font-size: 13px; line-height: 1.25;
-      margin: 0 0 14px;
+    img.cat {
+      width: min(440px, 80vw); height: auto;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
     }
-    .code { font-size: 56px; font-weight: 700; letter-spacing: -1px; margin: 0; }
-    .msg { font-size: 17px; font-weight: 500; margin: 4px 0 2px; }
-    .sub { color: var(--muted); max-width: 30rem; }
+    .sub { color: var(--muted); max-width: 32rem; }
     .sub b { color: var(--fg); font-weight: 500; word-break: break-all; }
     a {
-      margin-top: 18px; color: var(--accent); text-decoration: none;
-      font-weight: 500;
+      color: var(--accent); text-decoration: none; font-weight: 500;
     }
     a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <pre>
-       (
-        )
-     |~~~~~|___
-     |     |   \
-     |     |    )
-     |_____|___/
-    </pre>
-  <p class="code">412</p>
-  <p class="msg">I'm a teapot</p>
+  <img class="cat" src="https://http.cat/images/418.jpg" alt="418 — I'm a teapot">
   <p class="sub" id="sub">Nothing is archived yet.</p>
   <a id="brew" hidden>Brew a fresh snapshot &nearr;</a>
 

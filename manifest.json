@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Teapot",
   "version": "1.0.0",
-  "description": "Steep the current page: open its latest archive.today snapshot in reader mode. 412 if there is none.",
+  "description": "Steep the current page: open its latest archive.today snapshot in reader mode. 418 if there is none.",
   "browser_specific_settings": {
     "gecko": {
       "id": "teapot@local",

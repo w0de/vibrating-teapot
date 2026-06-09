@@ -2,13 +2,13 @@
 
 A single-purpose Firefox toolbar button. Click it on any page and it finds the
 **latest archive.today snapshot** of that URL and opens it **in reader mode**.
-No snapshot? It pours you a `412 I'm a teapot`.
+No snapshot? It pours you a `418 I'm a teapot`.
 
 ## How it works
 
 - Tries the mirrors `archive.ph → archive.today → archive.li → archive.md` in
   order and uses the first one that answers. An empty answer ("nothing
-  archived") still counts as the archive working — that's when you get the 412.
+  archived") still counts as the archive working — that's when you get the 418.
 - Snapshots are located via each mirror's Memento **TimeMap**; the newest
   memento is opened.
 - Reader mode is applied through Firefox's own reader once the page is
