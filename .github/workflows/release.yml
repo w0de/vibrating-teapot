@@ -1,0 +1,37 @@
+name: release
+
+# Tag a commit `vX.Y.Z` and push it to cut a release with the extension tarball.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pack extension
+        run: |
+          tar -czf vibrating-teapot.tar.gz \
+            manifest.json background.js \
+            options.html options.js \
+            teapot.html teapot.js \
+            icon.svg LICENSE README.md
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vibrating-teapot.tar.gz
+          generate_release_notes: true
+          body: |
+            ### Install (macOS / Linux)
+
+            ```sh
+            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && echo "→ Load Temporary Add-on… and pick $D/manifest.json" && (open -a Firefox "about:debugging#/runtime/this-firefox" 2>/dev/null || (firefox "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 &))
+            ```
+
+            Then click **Load Temporary Add-on…** and pick the `manifest.json` it prints.

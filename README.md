@@ -4,6 +4,20 @@ A single-purpose Firefox toolbar button. Click it on any page and it finds the
 **latest archive.today snapshot** of that URL and opens it **in reader mode**.
 No snapshot? It pours you a `418 I'm a teapot`.
 
+## Install (macOS / Linux)
+
+One line — downloads the latest release, extracts it, and opens Firefox to the
+loader. Then click **Load Temporary Add-on…** and pick the `manifest.json` it
+prints.
+
+```sh
+D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && echo "→ Load Temporary Add-on… and pick $D/manifest.json" && (open -a Firefox "about:debugging#/runtime/this-firefox" 2>/dev/null || (firefox "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 &))
+```
+
+A temporary add-on lasts until you restart Firefox (unsigned extensions can't be
+installed permanently on release Firefox). Re-run the line — or just the
+`about:debugging` part — to load it again. Windows users: you're on your own.
+
 ## How it works
 
 - Tries the mirrors `archive.ph → archive.today → archive.li → archive.md` in
@@ -21,11 +35,13 @@ No snapshot? It pours you a `418 I'm a teapot`.
   reader mode is off (in reader mode, Firefox's reader theme handles it).
   *Default: on.*
 
-## Install (temporary, for development)
+## Install (from source)
 
 1. Open `about:debugging#/runtime/this-firefox`
 2. **Load Temporary Add-on…**
 3. Pick `manifest.json` in this folder.
 
-To package for signing: zip the folder's contents (not the folder itself) and
-submit to addons.mozilla.org, or use `web-ext build`.
+## Releases
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which packs the
+extension into `vibrating-teapot.tar.gz` and attaches it to a GitHub Release.
