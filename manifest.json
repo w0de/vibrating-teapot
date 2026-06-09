@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Teapot",
+  "version": "1.0.0",
+  "description": "Steep the current page: open its latest archive.today snapshot in reader mode. 412 if there is none.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "teapot@local",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": ["tabs", "storage", "scripting"],
+  "host_permissions": [
+    "*://archive.li/*",
+    "*://archive.md/*",
+    "*://archive.ph/*",
+    "*://archive.today/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_title": "Steep this page  ·  archive + reader",
+    "default_icon": "icon.svg"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  }
+}
