@@ -51,6 +51,21 @@ load it again.
 2. **Load Temporary Add-on…**
 3. Pick `manifest.json` in this folder.
 
+## Development
+
+Hot-load the extension into a throwaway Firefox profile that **reloads on every
+save** — no manual re-pick in `about:debugging`:
+
+```sh
+./dev.sh            # launch in Firefox
+./dev.sh nightly    # use Firefox Nightly / Developer Edition
+```
+
+`dev.sh` wraps Mozilla's [`web-ext run`](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-run),
+fetched on demand via `npx` (needs Node; nothing to install globally). It opens
+a clean profile, sideloads the extension, and watches the source dir — edit a
+file, save, and the extension reloads automatically.
+
 ## Releases
 
 Pushing a `v*` tag runs `.github/workflows/release.yml`, which packs the
