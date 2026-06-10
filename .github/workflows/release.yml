@@ -1,6 +1,14 @@
 name: release
 
-# Tag a commit `vX.Y.Z` and push it to cut a release with the extension tarball.
+# Tag a commit `vX.Y.Z` (matching manifest.json's version) and push it: this
+# signs the extension through Mozilla's API and publishes the installable,
+# self-updating .xpi to a GitHub Release.
+#
+# One-time setup: create an add-on API credential at
+#   https://addons.mozilla.org/developers/addon/api/key/
+# and add the two halves as repository secrets:
+#   AMO_JWT_ISSUER  — the "JWT issuer" (user:...)
+#   AMO_JWT_SECRET  — the "JWT secret"
 on:
   push:
     tags: ["v*"]
@@ -14,30 +22,73 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pack extension
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Read manifest
+        id: meta
         run: |
+          echo "version=$(jq -r .version manifest.json)" >> "$GITHUB_OUTPUT"
+          echo "id=$(jq -r .browser_specific_settings.gecko.id manifest.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Tag must match manifest version
+        run: |
+          test "${GITHUB_REF_NAME#v}" = "${{ steps.meta.outputs.version }}" \
+            || { echo "::error::tag ${GITHUB_REF_NAME} != manifest ${{ steps.meta.outputs.version }}"; exit 1; }
+
+      - name: Stage extension
+        run: |
+          mkdir -p dist
+          cp manifest.json background.js options.html options.js \
+             teapot.html teapot.js icon.svg LICENSE dist/
+
+      - name: Sign (Mozilla, unlisted — no review)
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          npx --yes web-ext@8 sign \
+            --source-dir=dist \
+            --channel=unlisted \
+            --api-key="$AMO_JWT_ISSUER" \
+            --api-secret="$AMO_JWT_SECRET" \
+            --artifacts-dir=artifacts
+
+      - name: Collect artifacts
+        id: build
+        run: |
+          V="${{ steps.meta.outputs.version }}"
+          XPI="teapot-$V.xpi"
+          cp "$(ls artifacts/*.xpi | head -n1)" "$XPI"
+          echo "xpi=$XPI" >> "$GITHUB_OUTPUT"
+
+          # Update manifest: Firefox polls this for newer signed builds.
+          LINK="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/$XPI"
+          jq -n \
+            --arg id "${{ steps.meta.outputs.id }}" --arg v "$V" --arg link "$LINK" \
+            '{addons: {($id): {updates: [{version: $v, update_link: $link}]}}}' \
+            > updates.json
+
+          # Keep the source tarball for from-source / dev installs.
           tar -czf vibrating-teapot.tar.gz \
-            manifest.json background.js \
-            options.html options.js \
-            teapot.html teapot.js \
-            icon.svg LICENSE README.md
+            manifest.json background.js options.html options.js \
+            teapot.html teapot.js icon.svg LICENSE README.md
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          files: vibrating-teapot.tar.gz
+          files: |
+            ${{ steps.build.outputs.xpi }}
+            updates.json
+            vibrating-teapot.tar.gz
           generate_release_notes: true
           body: |
-            ### Install (macOS / Linux)
+            ### Install (Firefox)
 
-            ```sh
-            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && printf '%s' "$D/manifest.json" | (pbcopy 2>/dev/null || xclip -selection clipboard 2>/dev/null || xsel -ib 2>/dev/null || true) && echo "→ Load Temporary Add-on… and paste (now on your clipboard): $D/manifest.json" && { B="/Applications/Firefox.app/Contents/MacOS/firefox"; [ -x "$B" ] || B=firefox; "$B" "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 & }
-            ```
+            1. **[Download `${{ steps.build.outputs.xpi }}`](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ steps.build.outputs.xpi }})** in Firefox.
+            2. Open the downloaded file (Firefox asks *"Add Teapot?"* → **Add**).
 
-            ### Install (Windows, PowerShell)
+            It's signed by Mozilla, so it stays installed and **updates itself** from here on. That's it.
 
-            ```powershell
-            $D="$env:LOCALAPPDATA\vibrating-teapot"; ni $D -ItemType Directory -Force | Out-Null; iwr https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz -OutFile "$env:TEMP\vt.tgz"; tar -xzf "$env:TEMP\vt.tgz" -C $D; "$D\manifest.json" | Set-Clipboard; Start-Process firefox "about:debugging#/runtime/this-firefox"; "→ Load Temporary Add-on… and paste (now on your clipboard): $D\manifest.json"
-            ```
-
-            Then click **Load Temporary Add-on…** and **paste** the `manifest.json` path it copied to your clipboard.
+            <sub>Prefer to load from source? Grab `vibrating-teapot.tar.gz` and see the README.</sub>
