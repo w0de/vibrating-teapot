@@ -31,7 +31,13 @@ jobs:
             ### Install (macOS / Linux)
 
             ```sh
-            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && echo "→ Load Temporary Add-on… and pick $D/manifest.json" && (open -a Firefox "about:debugging#/runtime/this-firefox" 2>/dev/null || (firefox "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 &))
+            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && printf '%s' "$D/manifest.json" | (pbcopy 2>/dev/null || xclip -selection clipboard 2>/dev/null || xsel -ib 2>/dev/null || true) && echo "→ Load Temporary Add-on… and paste (now on your clipboard): $D/manifest.json" && (open -a Firefox "about:debugging#/runtime/this-firefox" 2>/dev/null || (firefox "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 &))
             ```
 
-            Then click **Load Temporary Add-on…** and pick the `manifest.json` it prints.
+            ### Install (Windows, PowerShell)
+
+            ```powershell
+            $D="$env:LOCALAPPDATA\vibrating-teapot"; ni $D -ItemType Directory -Force | Out-Null; iwr https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz -OutFile "$env:TEMP\vt.tgz"; tar -xzf "$env:TEMP\vt.tgz" -C $D; "$D\manifest.json" | Set-Clipboard; Start-Process firefox "about:debugging#/runtime/this-firefox"; "→ Load Temporary Add-on… and paste (now on your clipboard): $D\manifest.json"
+            ```
+
+            Then click **Load Temporary Add-on…** and **paste** the `manifest.json` path it copied to your clipboard.
