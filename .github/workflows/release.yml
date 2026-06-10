@@ -31,7 +31,7 @@ jobs:
             ### Install (macOS / Linux)
 
             ```sh
-            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && printf '%s' "$D/manifest.json" | (pbcopy 2>/dev/null || xclip -selection clipboard 2>/dev/null || xsel -ib 2>/dev/null || true) && echo "→ Load Temporary Add-on… and paste (now on your clipboard): $D/manifest.json" && (open -a Firefox "about:debugging#/runtime/this-firefox" 2>/dev/null || (firefox "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 &))
+            D="$HOME/.local/share/vibrating-teapot"; mkdir -p "$D" && curl -fsSL https://github.com/w0de/vibrating-teapot/releases/latest/download/vibrating-teapot.tar.gz | tar -xzf - -C "$D" && printf '%s' "$D/manifest.json" | (pbcopy 2>/dev/null || xclip -selection clipboard 2>/dev/null || xsel -ib 2>/dev/null || true) && echo "→ Load Temporary Add-on… and paste (now on your clipboard): $D/manifest.json" && { B="/Applications/Firefox.app/Contents/MacOS/firefox"; [ -x "$B" ] || B=firefox; "$B" "about:debugging#/runtime/this-firefox" >/dev/null 2>&1 & }
             ```
 
             ### Install (Windows, PowerShell)
